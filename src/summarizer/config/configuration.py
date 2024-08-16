@@ -5,7 +5,7 @@ from pathlib import Path
 from src.summarizer.constants import  *
 from src.summarizer.utils import *
 from src.summarizer.entity import DataIngestionConfig
-from src.summarizer.entity import DataValidationConfig,DataTransformationConfig
+from src.summarizer.entity import DataValidationConfig,DataTransformationConfig,ModelTrainerConfig
 
 class ConfigurationManager:
 
@@ -54,3 +54,26 @@ class ConfigurationManager:
         )
 
         return data_transformation_config
+    
+    def get_model_trainer_config(self) -> ModelTrainerConfig:
+        config = self.config.model_trainer
+        params = self.params.TrainingArguments
+
+        create_directories([config.root_dir])
+
+        model_trainer_config =  ModelTrainerConfig(
+            root_dir=Path(config.root_dir),
+            data_path=Path(config.data_path),
+            model_ckpt=Path(config.model_ckpt),
+            num_train_epochs=int(params.num_train_epochs),
+            warmup_steps=int(params.warmup_steps),
+            per_device_train_batch_size=int(params.per_device_train_batch_size),
+            weight_decay=float(params.weight_decay),
+            logging_steps=int(params.logging_steps),
+            evaluation_strategy=params.evaluation_strategy,
+            eval_steps=int(params.eval_steps),
+            save_steps=float(params.save_steps),
+            gradient_accumulation_steps=int(params.gradient_accumulation_steps)
+        )
+        return model_trainer_config
+    
